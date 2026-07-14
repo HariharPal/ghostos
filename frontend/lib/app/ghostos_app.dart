@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ghostos/core/navigation/app_router.dart';
+import 'package:ghostos/core/providers/app_settings_provider.dart';
 import 'package:ghostos/core/theme/app_theme.dart';
 
 class GhostOsApp extends ConsumerWidget {
@@ -9,11 +10,14 @@ class GhostOsApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(appRouterProvider);
+    final settings = ref.watch(appSettingsProvider);
 
     return MaterialApp.router(
       title: 'GhostOS',
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.dark,
+      theme: AppTheme.light,
+      darkTheme: AppTheme.dark,
+      themeMode: settings.themeMode,
       routerConfig: router,
     );
   }

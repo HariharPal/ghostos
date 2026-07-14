@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -6,8 +7,10 @@ import 'package:ghostos/features/activity/presentation/screens/activity_screen.d
 import 'package:ghostos/features/auth/presentation/providers/auth_controller.dart';
 import 'package:ghostos/features/auth/presentation/screens/auth_screen.dart';
 import 'package:ghostos/features/home/presentation/screens/home_screen.dart';
+import 'package:ghostos/features/notifications/presentation/screens/notifications_screen.dart';
 import 'package:ghostos/features/record/presentation/screens/record_screen.dart';
 import 'package:ghostos/features/splash/presentation/screens/splash_screen.dart';
+import 'package:ghostos/features/you/presentation/screens/settings_screen.dart';
 import 'package:ghostos/features/you/presentation/screens/you_screen.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -26,6 +29,14 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/auth',
         builder: (context, state) => const AuthScreen(),
+      ),
+      GoRoute(
+        path: '/notifications',
+        builder: (context, state) => const NotificationsScreen(),
+      ),
+      GoRoute(
+        path: '/settings',
+        builder: (context, state) => const SettingsScreen(),
       ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {
@@ -126,13 +137,13 @@ class AppShell extends StatelessWidget {
           child: NavigationBar(
             height: 74,
             selectedIndex: navigationShell.currentIndex,
-            destinations: const [
+            destinations:  [
               NavigationDestination(
                 icon: Icon(Icons.home_rounded),
                 label: 'Home',
               ),
               NavigationDestination(
-                icon: Icon(Icons.monitoring_rounded),
+                icon: Icon(Icons.insights_rounded),
                 label: 'Activity',
               ),
               NavigationDestination(

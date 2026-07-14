@@ -7,12 +7,14 @@ class GhostAppBar extends StatelessWidget implements PreferredSizeWidget {
     required this.planLabel,
     required this.onNotificationsTap,
     required this.onSearchTap,
+    this.leadingAvatar,
     super.key,
   });
 
   final String planLabel;
   final VoidCallback onSearchTap;
   final VoidCallback onNotificationsTap;
+  final Widget? leadingAvatar;
 
   @override
   Size get preferredSize => const Size.fromHeight(88);
@@ -26,34 +28,56 @@ class GhostAppBar extends StatelessWidget implements PreferredSizeWidget {
       leadingWidth: 82,
       leading: Padding(
         padding: const EdgeInsets.only(left: 18, top: 14, bottom: 14),
-        child: Container(
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            gradient: const LinearGradient(
-              colors: [AppColors.primary, Color(0xFFFF7B3D)],
+        child: leadingAvatar ??
+            Container(
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: const LinearGradient(
+                  colors: [AppColors.primary, Color(0xFFFF7B3D)],
+                ),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.16)),
+              ),
+              child: const Icon(
+                Icons.person_rounded,
+                size: 20,
+                color: Colors.white,
+              ),
             ),
-            border: Border.all(color: Colors.white.withValues(alpha: 0.16)),
-          ),
-          child: const Icon(
-            Icons.person_rounded,
-            size: 20,
-            color: Colors.white,
-          ),
-        ),
       ),
-      title: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+      title: Row(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Text(
-            AppCopy.appName,
-            style: theme.textTheme.titleLarge?.copyWith(letterSpacing: -0.4),
-          ),
-          Text(
-            AppCopy.tagline,
-            style: theme.textTheme.labelSmall?.copyWith(
-              color: AppColors.textSecondary,
-              letterSpacing: 0.3,
+          Container(
+            width: 44,
+            height: 44,
+            decoration: const BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: LinearGradient(
+                colors: [AppColors.primary, Color(0xFFFF7B3D)],
+              ),
             ),
+            child: const Icon(
+              Icons.emoji_emotions_rounded,
+              color: Colors.white,
+              size: 24,
+            ),
+          ),
+          const SizedBox(width: 10),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                AppCopy.appName,
+                style: theme.textTheme.titleLarge?.copyWith(letterSpacing: -0.4),
+              ),
+              Text(
+                AppCopy.tagline,
+                style: theme.textTheme.labelSmall?.copyWith(
+                  color: AppColors.textSecondary,
+                  letterSpacing: 0.3,
+                ),
+              ),
+            ],
           ),
         ],
       ),

@@ -186,7 +186,7 @@ class AuthScreen extends HookConsumerWidget {
                         ),
                       ),
                       const SizedBox(height: 12),
-                      const OutlinedButton.icon(
+                      OutlinedButton.icon(
                         onPressed: null,
                         icon: Icon(Icons.g_mobiledata_rounded, size: 28),
                         label: Text('Google Sign-In Soon'),

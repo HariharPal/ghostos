@@ -5,6 +5,52 @@ import 'package:google_fonts/google_fonts.dart';
 class AppTheme {
   const AppTheme._();
 
+  static ThemeData get light {
+    final base = dark;
+    final lightText = GoogleFonts.plusJakartaSansTextTheme(
+      ThemeData.light(useMaterial3: true).textTheme,
+    );
+
+    return ThemeData(
+      useMaterial3: true,
+      brightness: Brightness.light,
+      colorScheme: const ColorScheme(
+        brightness: Brightness.light,
+        primary: AppColors.primary,
+        onPrimary: Colors.white,
+        secondary: AppColors.xp,
+        onSecondary: Colors.white,
+        error: AppColors.danger,
+        onError: Colors.white,
+        surface: Color(0xFFF6F4F1),
+        onSurface: Color(0xFF131313),
+        tertiary: AppColors.coins,
+        onTertiary: Colors.black,
+      ),
+      scaffoldBackgroundColor: const Color(0xFFF3F1EE),
+      textTheme: lightText,
+      elevatedButtonTheme: base.elevatedButtonTheme,
+      outlinedButtonTheme: base.outlinedButtonTheme,
+      inputDecorationTheme: base.inputDecorationTheme.copyWith(
+        fillColor: Colors.white,
+      ),
+      snackBarTheme: base.snackBarTheme,
+      dividerColor: const Color(0xFFD7D2CC),
+      iconTheme: const IconThemeData(color: Color(0xFF131313), size: 22),
+      cardTheme: CardThemeData(
+        color: Colors.white,
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(30),
+          side: const BorderSide(color: Color(0xFFE5E0D9)),
+        ),
+      ),
+      navigationBarTheme: base.navigationBarTheme.copyWith(
+        backgroundColor: Colors.transparent,
+      ),
+    );
+  }
+
   static ThemeData get dark {
     final textTheme = GoogleFonts.plusJakartaSansTextTheme(
       ThemeData.dark(useMaterial3: true).textTheme,
