@@ -17,14 +17,10 @@ class HomeScreen extends ConsumerWidget {
     final displayName = profile.username.trim().isEmpty
         ? profile.email.split('@').first
         : profile.username;
-    final avatarLetter = displayName.isNotEmpty
-        ? displayName[0].toUpperCase()
-        : 'G';
 
     return Scaffold(
       appBar: GhostAppBar(
         planLabel: AppCopy.freePlan,
-        leadingAvatar: _AvatarBadge(initials: avatarLetter),
         onNotificationsTap: () => context.push('/notifications'),
         onSearchTap: () {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -39,7 +35,7 @@ class HomeScreen extends ConsumerWidget {
           final isWide = constraints.maxWidth >= 760;
 
           return ListView(
-            padding: const EdgeInsets.fromLTRB(20, 6, 20, 120),
+            padding: const EdgeInsets.fromLTRB(20, 8, 20, 120),
             children: [
               _GreetingBlock(displayName: displayName),
               const SizedBox(height: 18),
@@ -48,7 +44,7 @@ class HomeScreen extends ConsumerWidget {
               const SectionHeader(
                 title: 'Quick Statistics',
                 subtitle:
-                    'Your strongest signals for focus, movement, recovery, and consistency are grouped here.',
+                    'Your strongest signals for focus, movement, recovery, and consistency are grouped cleanly for mobile.',
               ),
               const SizedBox(height: 14),
               const _QuickStatsGrid(),
@@ -107,33 +103,6 @@ class HomeScreen extends ConsumerWidget {
   }
 }
 
-class _AvatarBadge extends StatelessWidget {
-  const _AvatarBadge({required this.initials});
-
-  final String initials;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        gradient: const LinearGradient(
-          colors: [AppColors.xp, Color(0xFF7AD4FF)],
-        ),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.18)),
-      ),
-      alignment: Alignment.center,
-      child: Text(
-        initials,
-        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              color: Colors.white,
-              fontWeight: FontWeight.w800,
-            ),
-      ),
-    );
-  }
-}
-
 class _GreetingBlock extends StatelessWidget {
   const _GreetingBlock({required this.displayName});
 
@@ -153,7 +122,7 @@ class _GreetingBlock extends StatelessWidget {
       children: [
         Text(
           '$greeting, $displayName',
-          style: Theme.of(context).textTheme.headlineMedium,
+          style: Theme.of(context).textTheme.headlineSmall,
         ),
         const SizedBox(height: 8),
         Text(
@@ -172,120 +141,132 @@ class _GhostCompanionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final compact = constraints.maxWidth < 380;
 
-    return GlassCard(
-      borderRadius: 36,
-      gradient: const LinearGradient(
-        colors: [Color(0xFF29150E), Color(0xFF1C1D20), Color(0xFF12212A)],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
+        return GlassCard(
+          borderRadius: 34,
+          gradient: const LinearGradient(
+            colors: [Color(0xFF29150E), Color(0xFF1C1D20), Color(0xFF12212A)],
+          ),
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                width: 96,
-                height: 96,
-                decoration: const BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: LinearGradient(
-                    colors: [AppColors.primary, Color(0xFFFF7B3D)],
-                  ),
-                ),
-                child: const Hero(
-                  tag: 'ghostos-mark',
-                  child: Icon(
-                    Icons.emoji_emotions_rounded,
-                    size: 44,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
+              if (compact)
+                Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'Today\'s Ghost Companion',
-                      style: theme.textTheme.labelLarge,
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      '$displayName\'s Ember Ghost',
-                      style: theme.textTheme.titleLarge,
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Low fog, strong rhythm, and enough energy for deep work plus movement. Your companion is ready to evolve.',
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: AppColors.textSecondary,
-                      ),
-                    ),
+                    _GhostAvatar(size: 78),
+                    const SizedBox(height: 16),
+                    _GhostCopy(displayName: displayName),
+                  ],
+                )
+              else
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const _GhostAvatar(size: 84),
+                    const SizedBox(width: 16),
+                    Expanded(child: _GhostCopy(displayName: displayName)),
                   ],
                 ),
+              const SizedBox(height: 18),
+              const Wrap(
+                spacing: 12,
+                runSpacing: 12,
+                children: [
+                  _MetricChip(
+                    label: 'Coins',
+                    value: '485',
+                    color: AppColors.coins,
+                    icon: Icons.toll_rounded,
+                  ),
+                  _MetricChip(
+                    label: 'XP',
+                    value: '1,840',
+                    color: AppColors.xp,
+                    icon: Icons.auto_graph_rounded,
+                  ),
+                  _MetricChip(
+                    label: 'Health',
+                    value: '92',
+                    color: AppColors.success,
+                    icon: Icons.favorite_rounded,
+                  ),
+                  _MetricChip(
+                    label: 'Energy',
+                    value: '84',
+                    color: AppColors.warning,
+                    icon: Icons.bolt_rounded,
+                  ),
+                ],
               ),
             ],
           ),
-          const SizedBox(height: 20),
-          const Wrap(
-            spacing: 12,
-            runSpacing: 12,
-            children: [
-              _MetricChip(
-                label: 'Coins',
-                value: '485',
-                color: AppColors.coins,
-                icon: Icons.toll_rounded,
-              ),
-              _MetricChip(
-                label: 'XP',
-                value: '1,840',
-                color: AppColors.xp,
-                icon: Icons.auto_graph_rounded,
-              ),
-              _MetricChip(
-                label: 'Health',
-                value: '92',
-                color: AppColors.success,
-                icon: Icons.favorite_rounded,
-              ),
-              _MetricChip(
-                label: 'Energy',
-                value: '84',
-                color: AppColors.warning,
-                icon: Icons.bolt_rounded,
-              ),
-              _MetricChip(
-                label: 'Mood',
-                value: 'Focused',
-                color: AppColors.primary,
-                icon: Icons.sentiment_very_satisfied_rounded,
-              ),
-              _MetricChip(
-                label: 'Weather',
-                value: 'Sunny',
-                color: AppColors.coins,
-                icon: Icons.wb_sunny_rounded,
-              ),
-              _MetricChip(
-                label: 'Fog',
-                value: '8%',
-                color: AppColors.fog,
-                icon: Icons.cloud_rounded,
-              ),
-              _MetricChip(
-                label: 'Streak',
-                value: '12 days',
-                color: AppColors.primary,
-                icon: Icons.local_fire_department_rounded,
-              ),
-            ],
-          ),
-        ],
+        );
+      },
+    );
+  }
+}
+
+class _GhostAvatar extends StatelessWidget {
+  const _GhostAvatar({required this.size});
+
+  final double size;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: size,
+      height: size,
+      decoration: const BoxDecoration(
+        shape: BoxShape.circle,
+        gradient: LinearGradient(
+          colors: [AppColors.primary, Color(0xFFFF7B3D)],
+        ),
       ),
+      child: const Hero(
+        tag: 'ghostos-mark',
+        child: Icon(
+          Icons.emoji_emotions_rounded,
+          size: 40,
+          color: Colors.white,
+        ),
+      ),
+    );
+  }
+}
+
+class _GhostCopy extends StatelessWidget {
+  const _GhostCopy({required this.displayName});
+
+  final String displayName;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Today\'s Ghost Companion',
+          style: theme.textTheme.labelLarge,
+        ),
+        const SizedBox(height: 6),
+        Text(
+          '$displayName\'s Ember Ghost',
+          style: theme.textTheme.titleLarge,
+        ),
+        const SizedBox(height: 8),
+        Text(
+          'Low fog, strong rhythm, and enough energy for deep work plus movement. Your companion is ready to evolve.',
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: AppColors.textSecondary,
+          ),
+        ),
+      ],
     );
   }
 }
@@ -305,11 +286,13 @@ class _MetricChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final width = (MediaQuery.of(context).size.width - 64) / 2;
+
     return SizedBox(
-      width: 154,
+      width: width.clamp(132.0, 170.0).toDouble(),
       child: GlassCard(
         padding: const EdgeInsets.all(14),
-        borderRadius: 24,
+        borderRadius: 22,
         gradient: LinearGradient(
           colors: [
             color.withValues(alpha: 0.14),
@@ -320,7 +303,7 @@ class _MetricChip extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Icon(icon, color: color, size: 20),
-            const SizedBox(height: 14),
+            const SizedBox(height: 12),
             Text(
               label,
               style: Theme.of(context).textTheme.labelMedium?.copyWith(
@@ -352,6 +335,7 @@ class _QuickStatsGrid extends StatelessWidget {
       ('Water Intake', '2.2L', '8 / 10 cups', Icons.water_drop_rounded, AppColors.success),
       ('Workout', '42 min', 'Upper body', Icons.fitness_center_rounded, AppColors.warning),
     ];
+    final width = (MediaQuery.of(context).size.width - 64) / 2;
 
     return Wrap(
       spacing: 14,
@@ -359,9 +343,9 @@ class _QuickStatsGrid extends StatelessWidget {
       children: stats
           .map(
             (stat) => SizedBox(
-              width: 168,
+              width: width.clamp(148.0, 180.0).toDouble(),
               child: GlassCard(
-                borderRadius: 28,
+                borderRadius: 26,
                 gradient: LinearGradient(
                   colors: [
                     stat.$5.withValues(alpha: 0.14),
@@ -371,11 +355,11 @@ class _QuickStatsGrid extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Icon(stat.$4, color: stat.$5, size: 24),
-                    const SizedBox(height: 18),
+                    Icon(stat.$4, color: stat.$5, size: 22),
+                    const SizedBox(height: 16),
                     Text(stat.$1, style: Theme.of(context).textTheme.labelLarge),
                     const SizedBox(height: 8),
-                    Text(stat.$2, style: Theme.of(context).textTheme.titleLarge),
+                    Text(stat.$2, style: Theme.of(context).textTheme.titleMedium),
                     const SizedBox(height: 6),
                     Text(stat.$3, style: Theme.of(context).textTheme.bodySmall),
                   ],
@@ -415,7 +399,7 @@ class _GoalsSection extends StatelessWidget {
     ];
 
     return GlassCard(
-      borderRadius: 32,
+      borderRadius: 30,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -461,7 +445,7 @@ class _GoalTile extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(22),
         color: Colors.white.withValues(alpha: 0.04),
         border: Border.all(color: AppColors.divider),
       ),
@@ -512,7 +496,7 @@ class _FocusTimerCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GlassCard(
-      borderRadius: 32,
+      borderRadius: 30,
       gradient: const LinearGradient(
         colors: [Color(0xFF141B24), Color(0xFF1E2025)],
       ),
@@ -527,8 +511,8 @@ class _FocusTimerCard extends StatelessWidget {
           const SizedBox(height: 20),
           Center(
             child: SizedBox(
-              width: 176,
-              height: 176,
+              width: 160,
+              height: 160,
               child: Stack(
                 alignment: Alignment.center,
                 children: [
@@ -550,7 +534,7 @@ class _FocusTimerCard extends StatelessWidget {
                     children: [
                       Text(
                         '39:12',
-                        style: Theme.of(context).textTheme.headlineMedium,
+                        style: Theme.of(context).textTheme.headlineSmall,
                       ),
                       const SizedBox(height: 6),
                       Text(
@@ -591,7 +575,7 @@ class _MiniStat extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(22),
+        borderRadius: BorderRadius.circular(20),
         color: Colors.white.withValues(alpha: 0.05),
         border: Border.all(color: AppColors.divider),
       ),
@@ -613,7 +597,7 @@ class _AiRecommendationCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GlassCard(
-      borderRadius: 32,
+      borderRadius: 30,
       gradient: const LinearGradient(
         colors: [Color(0xFF29150E), Color(0xFF1A1A1D)],
       ),
@@ -666,7 +650,7 @@ class _DailyChallengeCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GlassCard(
-      borderRadius: 32,
+      borderRadius: 30,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -750,7 +734,7 @@ class _RecentActivityCard extends StatelessWidget {
     ];
 
     return GlassCard(
-      borderRadius: 32,
+      borderRadius: 30,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -826,7 +810,7 @@ class _WeeklyProgressCard extends StatelessWidget {
     ];
 
     return GlassCard(
-      borderRadius: 32,
+      borderRadius: 30,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

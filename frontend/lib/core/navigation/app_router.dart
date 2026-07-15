@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -89,8 +88,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         return '/splash';
       }
 
-      if (!isBooting && isAtSplash) {
-        return isAuthenticated ? '/home' : '/auth';
+      if (isAtSplash) {
+        return null;
       }
 
       if (!isAuthenticated && !isAtAuth) {
@@ -137,7 +136,7 @@ class AppShell extends StatelessWidget {
           child: NavigationBar(
             height: 74,
             selectedIndex: navigationShell.currentIndex,
-            destinations:  [
+            destinations: const [
               NavigationDestination(
                 icon: Icon(Icons.home_rounded),
                 label: 'Home',

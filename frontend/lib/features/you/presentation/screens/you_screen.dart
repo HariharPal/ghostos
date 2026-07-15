@@ -80,13 +80,13 @@ class YouScreen extends HookConsumerWidget {
             ),
             const SizedBox(height: 14),
             GlassCard(
-              borderRadius: 32,
+              borderRadius: 30,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     'Edit Profile',
-                    style: Theme.of(context).textTheme.titleLarge,
+                    style: Theme.of(context).textTheme.headlineSmall,
                   ),
                   const SizedBox(height: 16),
                   TextField(
@@ -128,7 +128,7 @@ class YouScreen extends HookConsumerWidget {
             const _StatsSection(),
             const SizedBox(height: 22),
             GlassCard(
-              borderRadius: 32,
+              borderRadius: 30,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -202,108 +202,172 @@ class _ProfileHeader extends StatelessWidget {
         : 'G';
 
     return GlassCard(
-      borderRadius: 38,
+      borderRadius: 34,
       gradient: const LinearGradient(
         colors: [Color(0xFF25140D), Color(0xFF1B1B1E), Color(0xFF12212B)],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  'Your Profile',
-                  style: Theme.of(context).textTheme.headlineMedium,
-                ),
-              ),
-              _HeaderButton(
-                icon: Icons.notifications_none_rounded,
-                onTap: onNotificationsTap,
-              ),
-              const SizedBox(width: 10),
-              _HeaderButton(
-                icon: Icons.tune_rounded,
-                onTap: onSettingsTap,
-              ),
-            ],
-          ),
-          const SizedBox(height: 20),
-          Row(
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final compact = constraints.maxWidth < 390;
+          final statWidth = compact
+              ? (constraints.maxWidth - 24) / 2
+              : (constraints.maxWidth - 24) / 3;
+
+          return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                width: 94,
-                height: 94,
-                decoration: const BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: LinearGradient(
-                    colors: [AppColors.primary, Color(0xFFFF7B3D)],
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      'Your Profile',
+                      style: Theme.of(context).textTheme.headlineSmall,
+                    ),
                   ),
-                ),
-                alignment: Alignment.center,
-                child: Text(
-                  avatarLetter,
-                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w800,
-                      ),
-                ),
+                  _HeaderButton(
+                    icon: Icons.notifications_none_rounded,
+                    onTap: onNotificationsTap,
+                  ),
+                  const SizedBox(width: 10),
+                  _HeaderButton(
+                    icon: Icons.tune_rounded,
+                    onTap: onSettingsTap,
+                  ),
+                ],
               ),
-              const SizedBox(width: 18),
-              Expanded(
-                child: Column(
+              const SizedBox(height: 20),
+              if (compact)
+                Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      displayName,
-                      style: Theme.of(context).textTheme.titleLarge,
+                    _ProfileAvatar(letter: avatarLetter),
+                    const SizedBox(height: 16),
+                    _ProfileIdentity(
+                      displayName: displayName,
+                      email: email,
+                      level: level,
+                      xp: xp,
+                      currentStreak: currentStreak,
+                      focusCoins: focusCoins,
                     ),
-                    const SizedBox(height: 6),
-                    Text(email, style: Theme.of(context).textTheme.bodyMedium),
-                    const SizedBox(height: 14),
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: [
-                        _Tag(label: 'Level $level'),
-                        _Tag(label: '$xp XP'),
-                        _Tag(label: '$currentStreak day streak'),
-                        _Tag(label: '$focusCoins Focus Coins'),
-                      ],
+                  ],
+                )
+              else
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _ProfileAvatar(letter: avatarLetter),
+                    const SizedBox(width: 18),
+                    Expanded(
+                      child: _ProfileIdentity(
+                        displayName: displayName,
+                        email: email,
+                        level: level,
+                        xp: xp,
+                        currentStreak: currentStreak,
+                        focusCoins: focusCoins,
+                      ),
                     ),
                   ],
                 ),
+              const SizedBox(height: 20),
+              Wrap(
+                spacing: 12,
+                runSpacing: 12,
+                children: [
+                  _HeaderStat(
+                    label: 'Current Streak',
+                    value: '12 days',
+                    width: statWidth,
+                  ),
+                  _HeaderStat(
+                    label: 'Focus Coins',
+                    value: '485',
+                    width: statWidth,
+                  ),
+                  _HeaderStat(
+                    label: 'Ghost Mood',
+                    value: 'Focused',
+                    width: statWidth,
+                  ),
+                ],
               ),
             ],
-          ),
-          const SizedBox(height: 20),
-          const Row(
-            children: [
-              Expanded(
-                child: _HeaderStat(
-                  label: 'Current Streak',
-                  value: '12 days',
-                ),
-              ),
-              SizedBox(width: 12),
-              Expanded(
-                child: _HeaderStat(
-                  label: 'Focus Coins',
-                  value: '485',
-                ),
-              ),
-              SizedBox(width: 12),
-              Expanded(
-                child: _HeaderStat(
-                  label: 'Ghost Mood',
-                  value: 'Focused',
-                ),
-              ),
-            ],
-          ),
-        ],
+          );
+        },
       ),
+    );
+  }
+}
+
+class _ProfileAvatar extends StatelessWidget {
+  const _ProfileAvatar({required this.letter});
+
+  final String letter;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 94,
+      height: 94,
+      decoration: const BoxDecoration(
+        shape: BoxShape.circle,
+        gradient: LinearGradient(
+          colors: [AppColors.primary, Color(0xFFFF7B3D)],
+        ),
+      ),
+      alignment: Alignment.center,
+      child: Text(
+        letter,
+        style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+              color: Colors.white,
+              fontWeight: FontWeight.w800,
+            ),
+      ),
+    );
+  }
+}
+
+class _ProfileIdentity extends StatelessWidget {
+  const _ProfileIdentity({
+    required this.displayName,
+    required this.email,
+    required this.level,
+    required this.xp,
+    required this.currentStreak,
+    required this.focusCoins,
+  });
+
+  final String displayName;
+  final String email;
+  final int level;
+  final int xp;
+  final int currentStreak;
+  final int focusCoins;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          displayName,
+          style: Theme.of(context).textTheme.titleLarge,
+        ),
+        const SizedBox(height: 6),
+        Text(email, style: Theme.of(context).textTheme.bodyMedium),
+        const SizedBox(height: 14),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: [
+            _Tag(label: 'Level $level'),
+            _Tag(label: '$xp XP'),
+            _Tag(label: '$currentStreak day streak'),
+            _Tag(label: '$focusCoins Focus Coins'),
+          ],
+        ),
+      ],
     );
   }
 }
@@ -345,6 +409,7 @@ class _StatsSection extends StatelessWidget {
       ('Themes', '3 active', Icons.palette_rounded, AppColors.xp),
       ('Ghost Collection', '1 owned', Icons.auto_awesome_rounded, AppColors.success),
     ];
+    final width = (MediaQuery.of(context).size.width - 64) / 2;
 
     return Wrap(
       spacing: 14,
@@ -352,7 +417,7 @@ class _StatsSection extends StatelessWidget {
       children: items
           .map(
             (item) => SizedBox(
-              width: 168,
+              width: width.clamp(148.0, 180.0).toDouble(),
               child: GlassCard(
                 borderRadius: 28,
                 gradient: LinearGradient(
@@ -413,27 +478,35 @@ class _HeaderStat extends StatelessWidget {
   const _HeaderStat({
     required this.label,
     required this.value,
+    required this.width,
   });
 
   final String label;
   final String value;
+  final double width;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(22),
-        color: Colors.white.withValues(alpha: 0.05),
-        border: Border.all(color: AppColors.divider),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(label, style: Theme.of(context).textTheme.labelMedium),
-          const SizedBox(height: 6),
-          Text(value, style: Theme.of(context).textTheme.titleMedium),
-        ],
+    return SizedBox(
+      width: width,
+      child: Container(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(22),
+          color: Colors.white.withValues(alpha: 0.05),
+          border: Border.all(color: AppColors.divider),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(label, style: Theme.of(context).textTheme.labelMedium),
+            const SizedBox(height: 6),
+            Text(
+              value,
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+          ],
+        ),
       ),
     );
   }

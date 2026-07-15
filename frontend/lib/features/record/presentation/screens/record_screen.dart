@@ -14,6 +14,7 @@ class RecordScreen extends HookWidget {
   Widget build(BuildContext context) {
     final selectedRange = useState('Week');
     final filters = ['Today', 'Week', 'Month', 'Year'];
+    final metricWidth = (MediaQuery.of(context).size.width - 64) / 2;
 
     return Scaffold(
       appBar: GhostAppBar(
@@ -26,7 +27,7 @@ class RecordScreen extends HookWidget {
           final isWide = constraints.maxWidth >= 760;
 
           return ListView(
-            padding: const EdgeInsets.fromLTRB(20, 6, 20, 120),
+            padding: const EdgeInsets.fromLTRB(20, 8, 20, 120),
             children: [
               const SectionHeader(
                 title: 'Analytics Dashboard',
@@ -48,9 +49,14 @@ class RecordScreen extends HookWidget {
                     .toList(),
               ),
               const SizedBox(height: 18),
-              _TodaySummaryCard(range: selectedRange.value),
+              _TodaySummaryCard(
+                range: selectedRange.value,
+                metricWidth: metricWidth.clamp(132.0, 170.0).toDouble(),
+              ),
               const SizedBox(height: 18),
-              const _CoreMetricsGrid(),
+              _CoreMetricsGrid(
+                metricWidth: metricWidth.clamp(148.0, 180.0).toDouble(),
+              ),
               const SizedBox(height: 18),
               if (isWide)
                 const Row(
@@ -120,79 +126,161 @@ class RecordScreen extends HookWidget {
 }
 
 class _TodaySummaryCard extends StatelessWidget {
-  const _TodaySummaryCard({required this.range});
+  const _TodaySummaryCard({
+    required this.range,
+    required this.metricWidth,
+  });
 
   final String range;
+  final double metricWidth;
 
   @override
   Widget build(BuildContext context) {
     return GlassCard(
-      borderRadius: 34,
+      borderRadius: 32,
       gradient: const LinearGradient(
         colors: [Color(0xFF22140D), Color(0xFF1B1D21), Color(0xFF11222B)],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(14),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: AppColors.primarySoft,
-                ),
-                child: const Icon(
-                  Icons.analytics_rounded,
-                  color: AppColors.primary,
-                ),
-              ),
-              const SizedBox(width: 14),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final compact = constraints.maxWidth < 390;
+
+              if (compact) {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const _SummaryHeaderIcon(),
+                    const SizedBox(height: 14),
+                    Text(
+                      'Today\'s Summary',
+                      style: Theme.of(context).textTheme.headlineSmall,
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      '$range overview synced with your recent effort patterns.',
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                    const SizedBox(height: 12),
+                    const _ScoreBadge(label: 'Score 84'),
+                  ],
+                );
+              }
+
+              return Row(
                 children: [
-                  Text(
-                    'Today\'s Summary',
-                    style: Theme.of(context).textTheme.titleLarge,
+                  const _SummaryHeaderIcon(),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Today\'s Summary',
+                          style: Theme.of(context).textTheme.titleLarge,
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          '$range overview synced with your recent effort patterns.',
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
+                      ],
+                    ),
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    '$range overview synced with your recent effort patterns.',
-                    style: Theme.of(context).textTheme.bodySmall,
-                  ),
+                  const SizedBox(width: 12),
+                  const _ScoreBadge(label: 'Score 84'),
                 ],
-              ),
-              const Spacer(),
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(999),
-                  color: Colors.white.withValues(alpha: 0.06),
-                ),
-                child: Text(
-                  'Score 84',
-                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                        color: AppColors.coins,
-                      ),
-                ),
-              ),
-            ],
+              );
+            },
           ),
           const SizedBox(height: 16),
-          const Wrap(
+          Wrap(
             spacing: 12,
             runSpacing: 12,
             children: [
-              _SummaryPill(label: 'Focus Hours', value: '3.4h', color: AppColors.xp),
-              _SummaryPill(label: 'Study Time', value: '1.7h', color: AppColors.primary),
-              _SummaryPill(label: 'Workout', value: '42m', color: AppColors.warning),
-              _SummaryPill(label: 'Walking', value: '4.2km', color: AppColors.success),
-              _SummaryPill(label: 'Reading', value: '26m', color: AppColors.coins),
-              _SummaryPill(label: 'Mood', value: 'Focused', color: AppColors.primary),
+              _SummaryPill(
+                label: 'Focus Hours',
+                value: '3.4h',
+                color: AppColors.xp,
+                width: metricWidth,
+              ),
+              _SummaryPill(
+                label: 'Study Time',
+                value: '1.7h',
+                color: AppColors.primary,
+                width: metricWidth,
+              ),
+              _SummaryPill(
+                label: 'Workout',
+                value: '42m',
+                color: AppColors.warning,
+                width: metricWidth,
+              ),
+              _SummaryPill(
+                label: 'Walking',
+                value: '4.2km',
+                color: AppColors.success,
+                width: metricWidth,
+              ),
+              _SummaryPill(
+                label: 'Reading',
+                value: '26m',
+                color: AppColors.coins,
+                width: metricWidth,
+              ),
+              _SummaryPill(
+                label: 'Mood',
+                value: 'Focused',
+                color: AppColors.primary,
+                width: metricWidth,
+              ),
             ],
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _SummaryHeaderIcon extends StatelessWidget {
+  const _SummaryHeaderIcon();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: AppColors.primarySoft,
+      ),
+      child: const Icon(
+        Icons.analytics_rounded,
+        color: AppColors.primary,
+      ),
+    );
+  }
+}
+
+class _ScoreBadge extends StatelessWidget {
+  const _ScoreBadge({required this.label});
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(999),
+        color: Colors.white.withValues(alpha: 0.06),
+      ),
+      child: Text(
+        label,
+        style: Theme.of(context).textTheme.labelLarge?.copyWith(
+              color: AppColors.coins,
+            ),
       ),
     );
   }
@@ -203,35 +291,42 @@ class _SummaryPill extends StatelessWidget {
     required this.label,
     required this.value,
     required this.color,
+    required this.width,
   });
 
   final String label;
   final String value;
   final Color color;
+  final double width;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(22),
-        color: color.withValues(alpha: 0.12),
-        border: Border.all(color: color.withValues(alpha: 0.22)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(label, style: Theme.of(context).textTheme.labelMedium),
-          const SizedBox(height: 6),
-          Text(value, style: Theme.of(context).textTheme.titleMedium),
-        ],
+    return SizedBox(
+      width: width,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(22),
+          color: color.withValues(alpha: 0.12),
+          border: Border.all(color: color.withValues(alpha: 0.22)),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(label, style: Theme.of(context).textTheme.labelMedium),
+            const SizedBox(height: 6),
+            Text(value, style: Theme.of(context).textTheme.titleMedium),
+          ],
+        ),
       ),
     );
   }
 }
 
 class _CoreMetricsGrid extends StatelessWidget {
-  const _CoreMetricsGrid();
+  const _CoreMetricsGrid({required this.metricWidth});
+
+  final double metricWidth;
 
   @override
   Widget build(BuildContext context) {
@@ -252,7 +347,7 @@ class _CoreMetricsGrid extends StatelessWidget {
       children: items
           .map(
             (item) => SizedBox(
-              width: 168,
+              width: metricWidth,
               child: GlassCard(
                 borderRadius: 28,
                 gradient: LinearGradient(
@@ -301,7 +396,7 @@ class _WeeklyAnalyticsCard extends StatelessWidget {
     ];
 
     return GlassCard(
-      borderRadius: 32,
+      borderRadius: 30,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -380,7 +475,7 @@ class _HabitHeatmapCard extends StatelessWidget {
     ];
 
     return GlassCard(
-      borderRadius: 32,
+      borderRadius: 30,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -429,7 +524,7 @@ class _StreakCalendarCard extends StatelessWidget {
     const activeDays = {2, 3, 4, 6, 7, 9, 10, 12, 13, 14};
 
     return GlassCard(
-      borderRadius: 32,
+      borderRadius: 30,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -488,7 +583,7 @@ class _ProgressRingsCard extends StatelessWidget {
     ];
 
     return GlassCard(
-      borderRadius: 32,
+      borderRadius: 30,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -555,7 +650,7 @@ class _AiSummaryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GlassCard(
-      borderRadius: 32,
+      borderRadius: 30,
       gradient: const LinearGradient(
         colors: [Color(0xFF181F2A), Color(0xFF1E1F22)],
       ),
@@ -593,7 +688,7 @@ class _AchievementHistoryCard extends StatelessWidget {
     ];
 
     return GlassCard(
-      borderRadius: 32,
+      borderRadius: 30,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -640,7 +735,7 @@ class _JournalHistoryCard extends StatelessWidget {
     ];
 
     return GlassCard(
-      borderRadius: 32,
+      borderRadius: 30,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -692,7 +787,7 @@ class _PreviousSessionsCard extends StatelessWidget {
     ];
 
     return GlassCard(
-      borderRadius: 32,
+      borderRadius: 30,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
